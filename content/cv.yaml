@@ -1,14 +1,11 @@
 # CV source — single source of truth for the renderer.
 # Edit any field, save, and the editor preview re-renders within ~200ms.
 # A4 hard-constrained to one page; the build fails if it overflows.
-#
-# This is a fictional template. Replace it with your own.
 
 name: Alex Hartman
 accent: '#0866FF'
 font: serif
 density: normal
-
 contact:
   - network: mail
     username: alex@hartman.dev
@@ -23,7 +20,6 @@ contact:
     label: GitHub
   - network: location
     label: Berlin, Germany
-
 experience:
   - role: Senior Software Engineer
     company: Acme Logistics
@@ -32,14 +28,16 @@ experience:
     end: Present
     bullets:
       - >-
-        Led the rewrite of the routing service from a Python monolith to Go
-        microservices — cut p99 latency by 60% and shaved $0.4M off annual infra spend
+        Led the rewrite of the routing service from a Python monolith to Go microservices — cut p99 latency by 60% and
+        shaved $0.4M off annual infra spend
       - >-
-        Designed a self-serve onboarding flow that reduced time-to-first-shipment
-        from 6 days to 4 hours for new merchants
+        Designed a self-serve onboarding flow that reduced time-to-first-shipment from 6 days to 4 hours for new
+        merchants
       - Mentored 4 junior engineers; two were promoted within 12 months
+      - ''
+      - ''
+      - ''
     stack: Go, PostgreSQL, Kubernetes, gRPC, Temporal, Datadog
-
   - role: Software Engineer — Data Platform
     company: Northwind Analytics
     location: Munich, Germany
@@ -47,12 +45,9 @@ experience:
     end: 02/2023
     bullets:
       - Built the company's first streaming pipeline (10B events/day) on Kafka + Flink
-      - >-
-        Open-sourced **northwind-cli** — 1.4k GitHub stars and used in production
-        by 3 Fortune-500 customers
+      - Open-sourced **northwind-cli** — 1.4k GitHub stars and used in production by 3 Fortune-500 customers
       - Drove the migration from self-hosted Hadoop to a managed lakehouse — cut infra cost by 38%
     stack: Python, Kafka, Flink, Spark, AWS, Terraform
-
   - role: Software Engineer (Backend)
     company: Bluepin Labs
     location: Remote
@@ -60,11 +55,10 @@ experience:
     end: 05/2020
     bullets:
       - >-
-        Owned the billing platform end-to-end; designed a fraud-detection layer that
-        blocked $1.2M of bad charges in year one
+        Owned the billing platform end-to-end; designed a fraud-detection layer that blocked $1.2M of bad charges in
+        year one
       - Shipped Stripe + Adyen integrations with zero customer-visible downtime during cutover
     stack: Python, Django, PostgreSQL, Redis, Stripe
-
 education:
   - degree: M.Sc. Computer Science
     school: Technical University of Munich
@@ -76,7 +70,6 @@ education:
     location: Lübeck, Germany
     start: 10/2013
     end: 07/2016
-
 skills:
   - label: Languages
     items: Go, Python, Rust, TypeScript, SQL
@@ -86,16 +79,13 @@ skills:
     items: AWS, GCP, Kubernetes, Terraform, Datadog
   - label: Spoken
     items: English (native), German (C1), French (B2)
-
 projects:
   - title: northwind-cli
     date: 2022 – Present
-    desc: >-
-      Open-source CLI for inspecting analytics pipelines. **1.4k stars**, 22 contributors.
+    desc: Open-source CLI for inspecting analytics pipelines. **1.4k stars**, 22 contributors.
   - title: lattice
     date: 2024
     desc: Tiny Rust library for in-memory range trees. `cargo install lattice`.
-
 leadership:
   - title: Tech Lead — Berlin Go meetup
     date: 2023 – Present
@@ -103,11 +93,10 @@ leadership:
   - title: KubeCon EU speaker
     date: 03/2024
     desc: '*"Boring infrastructure: an underrated superpower"*'
-
 others:
   - title: AWS Solutions Architect — Professional
     date: '2023'
     desc: Renewed certification.
-  - title: HackerNews #1 — *"How we shrank our Postgres bill by 90%"*
+  - title: HackerNews
     date: 06/2023
     desc: 320 comments, 2.3k upvotes.
