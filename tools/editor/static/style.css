@@ -350,7 +350,12 @@ input, select, textarea { font-family: inherit; color: inherit; }
   width: 30px;
   height: 30px;
   color: var(--accent);
-  filter: drop-shadow(0 1px 2px rgba(15, 23, 42, 0.10));
+  filter: drop-shadow(0 2px 6px color-mix(in srgb, var(--accent) 35%, transparent));
+  transition: transform var(--t-fast) var(--ease-spring), filter var(--t-fast) var(--ease);
+}
+.brand-mark:hover {
+  transform: rotate(-3deg) scale(1.04);
+  filter: drop-shadow(0 4px 10px color-mix(in srgb, var(--accent) 45%, transparent));
 }
 .brand-mark svg { width: 30px; height: 30px; display: block; }
 .brand-stack {

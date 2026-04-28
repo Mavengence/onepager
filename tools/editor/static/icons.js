@@ -100,14 +100,18 @@
     );
   }
 
-  // A simple "C" mark for the brand glyph in the sidebar.
+  // Brand glyph — a tiny abstract CV: an accent-coloured page with a bold
+  // header rule and four body lines. The shape echoes the rendered output
+  // (one A4 page, dense top, looser tail) and the colour comes from the
+  // ``--accent`` CSS variable (so it tracks whatever theme the user picks).
   const BRAND_GLYPH = (`
-    <svg xmlns="${SVG_NS}" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-         stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"
-         aria-hidden="true">
-      <rect x="3.5" y="3.5" width="17" height="17" rx="3" opacity="0.18"/>
-      <path d="M16.2 8.2a5 5 0 1 0 0 7.6"/>
-      <circle cx="17" cy="6" r="1.2" fill="currentColor" stroke="none"/>
+    <svg xmlns="${SVG_NS}" viewBox="0 0 24 24" aria-hidden="true">
+      <rect x="4" y="3" width="16" height="18" rx="2.6" fill="currentColor"/>
+      <rect x="7.2" y="6.4" width="9.6" height="1.9" rx="0.95" fill="#fff"/>
+      <rect x="7.2" y="10.7" width="6.5" height="1.0" rx="0.5" fill="#fff" opacity="0.62"/>
+      <rect x="7.2" y="13.1" width="9.0" height="1.0" rx="0.5" fill="#fff" opacity="0.62"/>
+      <rect x="7.2" y="15.5" width="7.5" height="1.0" rx="0.5" fill="#fff" opacity="0.62"/>
+      <rect x="7.2" y="17.9" width="5.0" height="1.0" rx="0.5" fill="#fff" opacity="0.62"/>
     </svg>`).trim();
 
   function renderIcons(root) {
