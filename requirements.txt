@@ -1,0 +1,13 @@
+# Core renderer + editor
+flask>=3.0,<4.0
+pyyaml>=6.0
+weasyprint>=60.0
+
+# Imports
+pypdf>=3.0           # PDF text extraction
+
+# Optional: AI extract via Claude (only required if you set ANTHROPIC_API_KEY)
+anthropic>=0.34
+
+# Dev / tests
+pytest>=7.0

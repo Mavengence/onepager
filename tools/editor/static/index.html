@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="auto">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>CV · Editor</title>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net">
+  <!-- Vendor CodeMirror CSS first; local style.css overrides .CodeMirror sizing. -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/lib/codemirror.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/addon/dialog/dialog.css">
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div id="app">
+
+    <aside id="sidebar" aria-label="Outline">
+      <div class="sidebar-header">
+        <span class="brand-mark" data-icon="brand" aria-hidden="true"></span>
+        <div class="brand-stack">
+          <span class="brand-name">CV</span>
+          <span class="brand-sub">Editor</span>
+        </div>
+      </div>
+
+      <section id="outline" class="outline" aria-label="Section outline">
+        <h3 class="outline-title">
+          <span data-icon="list-tree" data-icon-size="12"></span>
+          <span>Sections</span>
+        </h3>
+        <div id="outline-list">
+          <div class="outline-skeleton">
+            <span class="skel skel-line med"></span>
+            <span class="skel skel-line short"></span>
+            <span class="skel skel-line med"></span>
+            <span class="skel skel-line short"></span>
+            <span class="skel skel-line med"></span>
+          </div>
+        </div>
+      </section>
+
+      <div class="sidebar-footer">
+        <span class="hint"><span class="kbd">⌘</span><span class="kbd">S</span>&nbsp;save</span>
+        <span class="hint"><span class="kbd">⌘</span><span class="kbd">\</span>&nbsp;sidebar</span>
+      </div>
+    </aside>
+
+    <main id="workspace">
+      <header id="topbar">
+        <button
+          id="sidebar-toggle"
+          type="button"
+          class="icon-btn"
+          aria-label="Toggle sidebar"
+          data-tooltip="Toggle sidebar"
+          data-shortcut="⌘\"
+        >
+          <span data-icon-collapse data-icon="panel-left-close" data-icon-size="17"></span>
+          <span data-icon-expand data-icon="panel-left-open" data-icon-size="17"></span>
+        </button>
+
+        <div class="crumbs">
+          <button
+            id="cv-switcher"
+            type="button"
+            class="cv-switcher"
+            aria-label="Switch CV variant"
+            data-tooltip="Switch CV variant — duplicate via the menu"
+          >
+            <span data-icon="file-text" data-icon-size="13"></span>
+            <span id="cv-switcher-label">cv.yaml</span>
+            <span data-icon="chevron-down" data-icon-size="11"></span>
+          </button>
+        </div>
+
+        <div id="cv-switcher-pop" class="popover" hidden>
+          <div class="popover-card cv-switcher-card">
+            <header class="popover-head">
+              <span class="popover-eyebrow">CV variants</span>
+              <span class="popover-hint">Each variant is a YAML file in <code>content/</code>.</span>
+            </header>
+            <div id="cv-switcher-list" class="cv-list"></div>
+            <footer class="cv-switcher-foot">
+              <button id="cv-new-btn" type="button" class="cv-new-btn">
+                <span data-icon="plus-circle" data-icon-size="12"></span>
+                <span>New variant…</span>
+              </button>
+            </footer>
+          </div>
+        </div>
+
+        <div class="topbar-right">
+          <div class="appearance-bar" role="group" aria-label="Appearance">
+            <label class="appearance-color" data-tooltip="Accent colour — applied to the rendered CV">
+              <span class="appearance-swatch" id="accent-swatch"></span>
+              <input id="accent-input" type="color" value="#111111" aria-label="Accent colour">
+            </label>
+            <select id="font-select" class="appearance-select" aria-label="Font family">
+              <option value="serif">Serif</option>
+              <option value="sans">Sans</option>
+              <option value="mono">Mono</option>
+            </select>
+            <select id="density-select" class="appearance-select" aria-label="Page density">
+              <option value="tight">Tight</option>
+              <option value="normal">Normal</option>
+              <option value="airy">Airy</option>
+            </select>
+          </div>
+
+          <button
+            id="build-btn"
+            type="button"
+            class="build-btn"
+            aria-label="Build PDF"
+            data-tooltip="Build the PDF · saves first, opens in a new tab"
+          >
+            <span data-icon="file-text" data-icon-size="13"></span>
+            <span>Build PDF</span>
+          </button>
+
+          <button
+            id="theme-btn"
+            type="button"
+            class="icon-btn"
+            aria-label="Themes"
+            data-tooltip="Themes — accent · font · density"
+          ><span data-icon="palette" data-icon-size="15"></span></button>
+
+          <button
+            id="import-btn"
+            type="button"
+            class="icon-btn"
+            aria-label="Import from another resume"
+            data-tooltip="Import from PDF, DOCX, rendercv YAML, or plain text"
+          ><span data-icon="upload" data-icon-size="15"></span></button>
+
+          <span id="last-saved" class="last-saved" hidden></span>
+
+          <button
+            id="issues-pill"
+            type="button"
+            class="issues-pill"
+            data-tooltip="Required fields missing — click to jump to the first issue"
+            hidden
+          >
+            <span data-icon="triangle-alert" data-icon-size="11"></span>
+            <span class="issues-count">0</span>
+            <span class="issues-label">issues</span>
+          </button>
+
+          <span id="status" data-state="ready" aria-live="polite">
+            <span class="status-icon" data-icon-status="ready" data-icon="circle-filled" data-icon-size="8"></span>
+            <span class="status-icon" data-icon-status="modified" data-icon="circle-filled" data-icon-size="8"></span>
+            <span class="status-icon" data-icon-status="saving" data-icon="loader" data-icon-size="12"></span>
+            <span class="status-icon" data-icon-status="saved" data-icon="check" data-icon-size="12"></span>
+            <span class="status-icon" data-icon-status="error" data-icon="triangle-alert" data-icon-size="12"></span>
+            <span id="status-label">Ready</span>
+          </span>
+
+          <button
+            id="refresh-btn"
+            type="button"
+            class="icon-btn"
+            aria-label="Re-render preview"
+            data-tooltip="Re-render preview"
+          ><span data-icon="refresh-cw" data-icon-size="15"></span></button>
+
+          <button
+            id="theme-toggle"
+            type="button"
+            class="icon-btn"
+            aria-label="Toggle theme"
+            data-tooltip="Theme"
+          >
+            <span data-icon-theme="sun" data-icon="sun" data-icon-size="15"></span>
+            <span data-icon-theme="moon" data-icon="moon" data-icon-size="15"></span>
+            <span data-icon-theme="monitor" data-icon="monitor" data-icon-size="15"></span>
+          </button>
+
+          <button
+            id="save-btn"
+            type="button"
+            data-tooltip="Save changes"
+            data-shortcut="⌘S"
+          >
+            <span data-icon="save" data-icon-size="14"></span>
+            <span>Save</span>
+          </button>
+        </div>
+      </header>
+
+      <div id="panes">
+        <section id="editor-pane" aria-label="Editor">
+          <div id="view-tabs" role="tablist" aria-label="Editor view">
+            <button class="view-tab is-active" data-view="form" role="tab" aria-selected="true">
+              <span data-icon="layout" data-icon-size="13"></span>
+              <span>Form</span>
+            </button>
+            <button class="view-tab" data-view="yaml" role="tab" aria-selected="false">
+              <span data-icon="code" data-icon-size="13"></span>
+              <span>YAML</span>
+            </button>
+            <span class="view-tabs-spacer"></span>
+            <button
+              id="lint-toggle"
+              type="button"
+              class="lint-toggle"
+              aria-pressed="true"
+              data-tooltip="Format YAML on save (⌘S only — never while you're typing)"
+              hidden
+            >
+              <span data-icon="sparkles" data-icon-size="11"></span>
+              <span class="lint-toggle-label">Format on save</span>
+              <span class="lint-toggle-state">on</span>
+            </button>
+            <span id="view-tabs-hint" class="view-tabs-hint muted">
+              Form is the source of truth — switching to YAML re-serialises it.
+            </span>
+          </div>
+          <div id="editor-host">
+            <div id="form-host" class="form-host"></div>
+            <div id="yaml-host" class="yaml-host">
+              <textarea id="editor"></textarea>
+            </div>
+          </div>
+        </section>
+
+        <div id="resizer" role="separator" aria-orientation="vertical" tabindex="0" data-tooltip="Drag to resize · double-click to reset"></div>
+
+        <section id="preview-pane" aria-label="Live preview">
+          <div id="preview-header">
+            <div id="mode-toggle" class="seg-toggle" role="group" aria-label="Preview mode">
+              <button class="seg-btn" data-mode="continuous" type="button" data-tooltip="Continuous scrolling">
+                <span data-icon="scroll-text" data-icon-size="13"></span>
+                <span class="seg-label">Continuous</span>
+              </button>
+              <button class="seg-btn" data-mode="paged" type="button" data-tooltip="Paged · simulates PDF">
+                <span data-icon="book-open-text" data-icon-size="13"></span>
+                <span class="seg-label">Paged</span>
+              </button>
+            </div>
+
+            <div id="auto-render" class="seg-toggle seg-toggle-render" role="group" aria-label="Auto-render mode">
+              <button
+                class="seg-btn is-active"
+                data-auto="live"
+                type="button"
+                data-tooltip="Live · re-render after every edit"
+              >
+                <span class="seg-dot" aria-hidden="true"></span>
+                <span data-icon="zap" data-icon-size="12"></span>
+                <span class="seg-label">Live</span>
+              </button>
+              <button
+                class="seg-btn"
+                data-auto="manual"
+                type="button"
+                data-tooltip="Manual · only re-render on Refresh"
+              >
+                <span data-icon="pause" data-icon-size="12"></span>
+                <span class="seg-label">Manual</span>
+              </button>
+            </div>
+
+            <div class="preview-meta">
+              <span id="page-count" class="page-count" hidden>
+                <span data-icon="files" data-icon-size="11"></span>
+                <span id="page-count-text">…</span>
+              </span>
+              <div id="zoom-control" class="zoom-control" role="group" aria-label="Preview zoom">
+                <button id="zoom-out" type="button" class="zoom-btn" data-tooltip="Zoom out" data-shortcut="⌘−" aria-label="Zoom out">
+                  <span data-icon="minus" data-icon-size="12"></span>
+                </button>
+                <button id="zoom-fit" type="button" class="zoom-level" data-tooltip="Fit to width" data-shortcut="⌘0" aria-label="Fit preview to width">
+                  <span id="zoom-text">Fit</span>
+                </button>
+                <button id="zoom-in" type="button" class="zoom-btn" data-tooltip="Zoom in" data-shortcut="⌘+" aria-label="Zoom in">
+                  <span data-icon="plus" data-icon-size="12"></span>
+                </button>
+              </div>
+              <button id="preview-open-btn" type="button" class="icon-btn icon-btn-sm" data-tooltip="Open preview in new tab" aria-label="Open preview in new tab">
+                <span data-icon="maximize-2" data-icon-size="12"></span>
+              </button>
+            </div>
+          </div>
+          <div id="preview-loading" hidden>
+            <span class="spinner" aria-hidden="true"></span>
+            <span id="preview-loading-text">Rendering</span>
+          </div>
+          <div id="preview-wrap">
+            <div id="preview-stage">
+              <iframe id="preview" title="CV preview" src="about:blank"></iframe>
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <footer id="statusbar">
+        <span id="filepath" class="muted">
+          <span data-icon="file-text" data-icon-size="12"></span>
+          <span id="filepath-text">content/cv.yaml</span>
+        </span>
+        <span class="status-dot" aria-hidden="true"></span>
+        <span id="bytes-info" class="muted">0 B</span>
+        <span class="spacer"></span>
+        <span id="position" class="muted">Ln 1, Col 1</span>
+      </footer>
+    </main>
+  </div>
+
+  <div id="tooltip" class="tooltip" role="tooltip"></div>
+
+  <!-- First-run tour overlay -->
+  <div id="tour" class="tour" hidden>
+    <div class="tour-spotlight"></div>
+    <div class="tour-card">
+      <span class="tour-step"></span>
+      <h3 class="tour-title"></h3>
+      <p class="tour-body"></p>
+      <div class="tour-foot">
+        <button id="tour-skip" type="button" class="tour-skip">Skip tour</button>
+        <span class="tour-spacer"></span>
+        <button id="tour-prev" type="button" class="tour-btn tour-btn-ghost">Back</button>
+        <button id="tour-next" type="button" class="tour-btn tour-btn-primary">Next</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Theme picker popover -->
+  <div id="theme-popover" class="popover" hidden role="dialog" aria-label="Themes">
+    <div class="popover-card">
+      <header class="popover-head">
+        <span class="popover-eyebrow">Themes</span>
+        <span class="popover-hint">Drop a JSON in <code>themes/</code> to add your own — or import from a URL.</span>
+      </header>
+      <div id="theme-list" class="theme-list"></div>
+      <footer class="theme-foot">
+        <input id="theme-url" type="text" class="theme-url-input"
+               placeholder="https://gist.githubusercontent.com/…/theme.json"
+               spellcheck="false">
+        <button id="theme-import-btn" type="button" class="cv-new-btn">
+          <span data-icon="upload" data-icon-size="11"></span>
+          <span>Import URL</span>
+        </button>
+      </footer>
+    </div>
+  </div>
+
+  <!-- Import modal -->
+  <div id="import-modal" class="modal" hidden role="dialog" aria-label="Import resume">
+    <div class="modal-card">
+      <header class="modal-head">
+        <h2>Import resume</h2>
+        <button id="import-close" class="icon-btn icon-btn-sm" aria-label="Close">
+          <span data-icon="x-close" data-icon-size="14"></span>
+        </button>
+      </header>
+      <nav class="modal-tabs" role="tablist">
+        <button class="modal-tab is-active" data-tab="ai" role="tab">
+          <span data-icon="sparkles" data-icon-size="13"></span>
+          <span>AI extract <span id="ai-tab-badge" class="modal-tab-badge" hidden>Claude</span></span>
+        </button>
+        <button class="modal-tab" data-tab="rendercv" role="tab">
+          <span data-icon="arrow-right" data-icon-size="13"></span>
+          <span>rendercv YAML</span>
+        </button>
+        <button class="modal-tab" data-tab="text" role="tab">
+          <span data-icon="wand" data-icon-size="13"></span>
+          <span>Plain text</span>
+        </button>
+      </nav>
+      <div class="modal-body">
+        <p id="import-hint" class="modal-hint"></p>
+
+        <div id="import-dropzone" class="modal-dropzone" hidden>
+          <span data-icon="upload" data-icon-size="22" aria-hidden="true"></span>
+          <strong>Drop a PDF, DOCX, TXT, or Markdown file here</strong>
+          <span class="modal-dropzone-sub">or paste text below</span>
+          <input id="import-file-input" type="file" hidden
+                 accept=".pdf,.docx,.txt,.md,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain,text/markdown">
+          <button id="import-file-btn" type="button" class="modal-btn modal-btn-ghost">Choose file…</button>
+          <span id="import-file-name" class="modal-file-name muted" hidden></span>
+        </div>
+
+        <textarea
+          id="import-input"
+          class="modal-textarea"
+          placeholder="Paste here…"
+          spellcheck="false"
+        ></textarea>
+        <div id="import-error" class="modal-error" hidden></div>
+      </div>
+      <footer class="modal-foot">
+        <span id="import-status" class="modal-status muted"></span>
+        <span class="spacer"></span>
+        <button id="import-cancel" class="modal-btn modal-btn-ghost" type="button">Cancel</button>
+        <button id="import-apply" class="modal-btn modal-btn-primary" type="button">
+          Convert &amp; replace
+        </button>
+      </footer>
+    </div>
+  </div>
+
+  <script src="/static/icons.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/lib/codemirror.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/mode/yaml/yaml.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/addon/edit/closebrackets.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/addon/search/searchcursor.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/addon/search/search.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/addon/dialog/dialog.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/codemirror@5.65.16/addon/selection/active-line.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
+  <script src="/static/form.js"></script>
+  <script src="/static/app.js"></script>
+</body>
+</html>
