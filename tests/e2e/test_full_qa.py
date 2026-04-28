@@ -481,8 +481,8 @@ def main():
             page.evaluate("document.querySelector('.brand-mark svg') !== null"),
         )
         check(
-            "brand-name reads 'CV'",
-            page.evaluate("document.querySelector('.brand-name')?.textContent?.trim()") == "CV",
+            "brand-name reads 'Tech CV'",
+            page.evaluate("document.querySelector('.brand-name')?.textContent?.trim()").replace(" ", " ") == "Tech CV",
         )
 
         # ───────────────────────────────────────────────────────

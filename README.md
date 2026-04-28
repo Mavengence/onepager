@@ -1,6 +1,6 @@
 <div align="center">
 
-# OnePager
+# Tech CV
 
 ### A live one-page CV editor that **fails the build** if you overflow.
 
@@ -33,8 +33,8 @@ A CV is a small document with a brutal constraint: one page, A4, in a layout con
 ## Run it
 
 ```bash
-git clone https://github.com/your-handle/onepager.git
-cd onepager
+git clone https://github.com/Mavengence/tech-cv.git
+cd tech-cv
 pip install -r requirements.txt
 
 # Render a PDF
@@ -227,7 +227,7 @@ Each one auto-resolves the URL from `username`; pass an explicit `href:` to over
 
 ## Compared to
 
-| | **OnePager** | rendercv | Word / Pages | LaTeX |
+| | **Tech CV** | rendercv | Word / Pages | LaTeX |
 |---|---|---|---|---|
 | Editing model | **Structured form + live A4 preview** | YAML + CLI | Free-form WYSIWYG | Source + recompile |
 | Feedback loop | **~250 ms in browser** | Render → open PDF | Instant but unreliable | Seconds, full rebuild |
@@ -257,7 +257,7 @@ See [**EXTENDING.md**](EXTENDING.md) for the 30-second recipe to add a section, 
 ## File layout
 
 ```
-onepager/
+tech-cv/
 ├── content/cv.yaml             ← edit this (or use the form)
 ├── design/fonts/               ← Inter + Source Serif 4 (TTF)
 ├── engine/
